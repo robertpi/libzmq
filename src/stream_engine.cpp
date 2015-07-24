@@ -291,12 +291,21 @@ void zmq::stream_engine_t::terminate ()
 
 void zmq::stream_engine_t::in_event ()
 {
-    zmq_assert (!io_error);
+	puts("zmq::stream_engine_t::in_event start");
+	
+	zmq_assert(!io_error);
 
     //  If still handshaking, receive and process the greeting message.
     if (unlikely (handshaking))
-        if (!handshake ())
-            return;
+		if (!handshake())
+		{
+			puts("zmq::stream_engine_t::in_event handshake failed - exiting");
+			return;
+		}
+		else
+		{
+			puts("zmq::stream_engine_t::in_event handshake successful");
+		}
 
     zmq_assert (decoder);
 
@@ -321,12 +330,14 @@ void zmq::stream_engine_t::in_event ()
 
         if (rc == 0) {
             error (connection_error);
+			puts("zmq::stream_engine_t::in_event exiting no more data");
             return;
         }
         if (rc == -1) {
             if (errno != EAGAIN)
                 error (connection_error);
-            return;
+			puts("zmq::stream_engine_t::in_event connection error");
+			return;
         }
 
         //  Adjust input size
@@ -362,6 +373,8 @@ void zmq::stream_engine_t::in_event ()
     }
 
     session->flush ();
+
+	puts("zmq::stream_engine_t::in_event end");
 }
 
 void zmq::stream_engine_t::out_event ()
@@ -788,7 +801,9 @@ int zmq::stream_engine_t::next_handshake_command (msg_t *msg_)
 int zmq::stream_engine_t::process_handshake_command (msg_t *msg_)
 {
     zmq_assert (mechanism != NULL);
-    const int rc = mechanism->process_handshake_command (msg_);
+	puts("zmq::stream_engine_t::process_handshake_command start");
+
+	const int rc = mechanism->process_handshake_command(msg_);
     if (rc == 0) {
         if (mechanism->status () == mechanism_t::ready)
             mechanism_ready ();
@@ -801,7 +816,9 @@ int zmq::stream_engine_t::process_handshake_command (msg_t *msg_)
             restart_output ();
     }
 
-    return rc;
+	puts("zmq::stream_engine_t::process_handshake_command end");
+
+	return rc;
 }
 
 void zmq::stream_engine_t::zap_msg_available ()

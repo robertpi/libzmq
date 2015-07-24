@@ -104,7 +104,9 @@ int zmq::curve_server_t::next_handshake_command (msg_t *msg_)
 
 int zmq::curve_server_t::process_handshake_command (msg_t *msg_)
 {
-    int rc = 0;
+	int rc = 0;
+
+	puts("zmq::curve_server_t::process_handshake_command start");
 
     switch (state) {
         case expect_hello:
@@ -126,7 +128,10 @@ int zmq::curve_server_t::process_handshake_command (msg_t *msg_)
         rc = msg_->init ();
         errno_assert (rc == 0);
     }
-    return rc;
+
+	puts("zmq::curve_server_t::process_handshake_command end");
+
+	return rc;
 }
 
 int zmq::curve_server_t::encode (msg_t *msg_)
@@ -279,7 +284,9 @@ zmq::mechanism_t::status_t zmq::curve_server_t::status () const
 
 int zmq::curve_server_t::process_hello (msg_t *msg_)
 {
-    if (msg_->size () != 200) {
+	puts("zmq::curve_server_t::process_hello start");
+
+	if (msg_->size() != 200) {
         //  Temporary support for security debugging
         puts ("CURVE I: client HELLO is not correct size");
         errno = EPROTO;
@@ -330,7 +337,10 @@ int zmq::curve_server_t::process_hello (msg_t *msg_)
     }
 
     state = send_welcome;
-    return rc;
+
+	puts("zmq::curve_server_t::process_hello end");
+
+	return rc;
 }
 
 int zmq::curve_server_t::produce_welcome (msg_t *msg_)
@@ -395,7 +405,9 @@ int zmq::curve_server_t::produce_welcome (msg_t *msg_)
 
 int zmq::curve_server_t::process_initiate (msg_t *msg_)
 {
-    if (msg_->size () < 257) {
+	puts("zmq::curve_server_t::process_initiate start");
+
+	if (msg_->size() < 257) {
         //  Temporary support for security debugging
         puts ("CURVE I: client INITIATE is not correct size");
         errno = EPROTO;
@@ -501,7 +513,9 @@ int zmq::curve_server_t::process_initiate (msg_t *msg_)
     rc = crypto_box_beforenm (cn_precom, cn_client, cn_secret);
     zmq_assert (rc == 0);
 
-    //  Use ZAP protocol (RFC 27) to authenticate the user.
+	puts("zmq::curve_server_t::process_initiate before zap_connect ");
+
+	//  Use ZAP protocol (RFC 27) to authenticate the user.
     rc = session->zap_connect ();
     if (rc == 0) {
         send_zap_request (client_key);
@@ -518,6 +532,8 @@ int zmq::curve_server_t::process_initiate (msg_t *msg_)
     }
     else
         state = send_ready;
+
+	puts("zmq::curve_server_t::process_initiate end");
 
     return parse_metadata (initiate_plaintext + crypto_box_ZEROBYTES + 128,
                            clen - crypto_box_ZEROBYTES - 128);

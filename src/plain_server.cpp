@@ -222,10 +222,12 @@ int zmq::plain_server_t::produce_welcome (msg_t *msg_) const
 
 int zmq::plain_server_t::process_initiate (msg_t *msg_)
 {
-    const unsigned char *ptr = static_cast <unsigned char *> (msg_->data ());
+	puts("zmq::plain_server_t::process_initiate start");
+
+	const unsigned char *ptr = static_cast <unsigned char *> (msg_->data());
     const size_t bytes_left = msg_->size ();
 
-    if (bytes_left < 9 || memcmp (ptr, "\x08INITIATE", 9)) {
+	if (bytes_left < 9 || memcmp(ptr, "\x08INITIATE", 9)) {
         //  Temporary support for security debugging
         puts ("PLAIN I: invalid PLAIN client, did not send INITIATE");
         errno = EPROTO;

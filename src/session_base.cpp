@@ -307,13 +307,15 @@ int zmq::session_base_t::zap_connect ()
 
     endpoint_t peer = find_endpoint ("inproc://zeromq.zap.01");
     if (peer.socket == NULL) {
-        errno = ECONNREFUSED;
+		puts("error no zap server installed");
+		errno = ECONNREFUSED;
         return -1;
     }
     if (peer.options.type != ZMQ_REP
     &&  peer.options.type != ZMQ_ROUTER
     &&  peer.options.type != ZMQ_SERVER) {
-        errno = ECONNREFUSED;
+		puts("error no zap server wrong socket type");
+		errno = ECONNREFUSED;
         return -1;
     }
 
